@@ -1,7 +1,42 @@
 <!DOCTYPE html>
-<html>
-<body>
-<h1>Hello World</h1>
-<p>I'm hosted with GitHub Pages.</p>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Data Visualization Site</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <header class="bg-blue-600 text-white shadow-md">
+        <div class="container mx-auto px-4 py-6">
+            <h1 class="text-3xl font-bold">My Data Visualization Project</h1>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <section class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-2xl font-semibold mb-4">Welcome to My Project</h2>
+            <p class="text-gray-700">
+                This site showcases data visualizations based on information stored in Google Sheets. 
+                Explore the charts and graphs below to gain insights into our collected data.
+            </p>
+        </section>
+
+        <section class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-semibold mb-4">Data Visualization</h2>
+            <div id="chart-container" class="w-full h-96 bg-gray-200 flex items-center justify-center">
+                <p class="text-gray-600">Chart loading...</p>
+                <!-- Your chart will be inserted here -->
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-200 mt-8">
+        <div class="container mx-auto px-4 py-4 text-center text-gray-600">
+            <p>&copy; 2024 My Data Visualization Project. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- <script src="path-to-your-javascript-file.js"></script> -->
 </body>
 </html>
