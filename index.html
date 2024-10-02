@@ -97,25 +97,36 @@
             }).then(function(response) {
                 const data = response.result.values;
                 if (data && data.length > 0) {
+                    console.log("Data loaded successfully:", data);
                     createChart(data);
                     populateDataTable(data);
                 } else {
                     console.log('No data found.');
+                    document.getElementById('chart-container').innerHTML = '<p>No data available to display.</p>';
                 }
             }, function(response) {
-                console.error('Error: ' + response.result.error.message);
+                console.error('Error loading data:', response.result.error.message);
+                document.getElementById('chart-container').innerHTML = '<p>Error loading data. Please try again later.</p>';
             });
         }
 
         // Function to create a chart
         function createChart(data) {
+            console.log("Creating chart with data:", data);
             const ctx = document.getElementById('myChart').getContext('2d');
-            const labels = data.map(row => row[0]); // Assuming first column is labels
-            const datasets = [1, 2, 3, 4, 5, 6].map(index => ({
-                label: `Column ${index + 1}`,
-                data: data.map(row => parseFloat(row[index]) || 0),
-                backgroundColor: `rgba(${Math.random() * 255},${Math.random() * 255},${Math.random() * 255},0.6)`,
-            }));
+            
+            // Assuming first column is labels, rest are data series
+            const labels = data.map(row => row[0]);
+            const datasets = [];
+
+            // Create a dataset for each column (excluding the first column which is labels)
+            for (let i = 1; i < data[0].length; i++) {
+                datasets.push({
+                    label: `Column ${i}`,
+                    data: data.map(row => parseFloat(row[i]) || 0),
+                    backgroundColor: `rgba(${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)},0.6)`,
+                });
+            }
 
             new Chart(ctx, {
                 type: 'bar',
@@ -162,6 +173,20 @@
                     tr.appendChild(td);
                 });
                 tableBody.appendChild(tr);
+            });
+        }
+
+        // Initialize the Google Sheets API client
+        function initClient() {
+            gapi.client.init({
+                apiKey: 'AIzaSyDcQhBAfb_kTc8UMu2LacI2HB1rbT3AuJQ',
+                discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
+            }).then(function() {
+                console.log("GAPI client initialized. Loading sheet data...");
+                loadSheetData();
+            }, function(error) {
+                console.error('Error initializing GAPI client:', error);
+                document.getElementById('chart-container').innerHTML = '<p>Error initializing data loader. Please try again later.</p>';
             });
         }
 
