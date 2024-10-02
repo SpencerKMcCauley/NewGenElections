@@ -3,40 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Data Visualization Site</title>
+    <title>NewGenElections Data Visualization</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/google-sheets-api/0.1.0/index.min.js"></script>
 </head>
 <body class="bg-gray-100 font-sans">
     <header class="bg-blue-600 text-white shadow-md">
         <div class="container mx-auto px-4 py-6">
-            <h1 class="text-3xl font-bold">My Data Visualization Project</h1>
+            <h1 class="text-3xl font-bold">NewGenElections Data Visualization</h1>
         </div>
     </header>
 
+    <nav class="bg-blue-500">
+        <div class="container mx-auto px-4">
+            <ul class="flex space-x-4">
+                <li><a href="#home" class="text-white hover:bg-blue-600 px-3 py-2 rounded" onclick="showTab('home')">Home</a></li>
+                <li><a href="#newgenelections" class="text-white hover:bg-blue-600 px-3 py-2 rounded" onclick="showTab('newgenelections')">NewGenElections Data</a></li>
+            </ul>
+        </div>
+    </nav>
+
     <main class="container mx-auto px-4 py-8">
-        <section class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 class="text-2xl font-semibold mb-4">Welcome to My Project</h2>
-            <p class="text-gray-700">
-                This site showcases data visualizations based on information stored in Google Sheets. 
-                Explore the charts and graphs below to gain insights into our collected data.
-            </p>
+        <section id="home" class="tab-content">
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-2xl font-semibold mb-4">Welcome to NewGenElections Data Visualization</h2>
+                <p class="text-gray-700">
+                    This site showcases data visualizations based on information stored in Google Sheets about NewGenElections. 
+                    Click on the "NewGenElections Data" tab to explore charts and graphs that provide insights into our collected data.
+                </p>
+            </div>
         </section>
 
-        <section class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-2xl font-semibold mb-4">Data Visualization</h2>
-            <div id="chart-container" class="w-full h-96 bg-gray-200 flex items-center justify-center">
-                <p class="text-gray-600">Chart loading...</p>
-                <!-- Your chart will be inserted here -->
+        <section id="newgenelections" class="tab-content hidden">
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-2xl font-semibold mb-4">NewGenElections Data Visualization</h2>
+                <div id="chart-container" class="w-full h-96 bg-gray-200 flex items-center justify-center">
+                    <p class="text-gray-600">Loading chart...</p>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-semibold mb-4">Raw Data</h3>
+                <div id="data-table" class="overflow-x-auto">
+                    <table class="min-w-full bg-white">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="py-2 px-4 border-b">Column 1</th>
+                                <th class="py-2 px-4 border-b">Column 2</th>
+                                <th class="py-2 px-4 border-b">Column 3</th>
+                            </tr>
+                        </thead>
+                        <tbody id="data-body">
+                            <!-- Data will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
     </main>
 
     <footer class="bg-gray-200 mt-8">
         <div class="container mx-auto px-4 py-4 text-center text-gray-600">
-            <p>&copy; 2024 My Data Visualization Project. All rights reserved.</p>
+            <p>&copy; 2024 NewGenElections Data Visualization Project. All rights reserved.</p>
         </div>
     </footer>
 
-    <!-- <script src="path-to-your-javascript-file.js"></script> -->
+    <script>
+        // Function to switch between tabs
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            document.getElementById(tabId).classList.remove('hidden');
+        }
+
+        // Function to load data from Google Sheets
+        async function loadSheetData() {
+            try {
+                // Replace with your actual Google Sheets API call
+                const response = await fetch('YOUR_GOOGLE_SHEETS_API_ENDPOINT');
+                const data = await response.json();
+                return data.values;
+            } catch (error) {
+                console.error('Error loading sheet data:', error);
+                return [];
+            }
+        }
+
+        // Function to create a chart
+        function createChart(data) {
+            const ctx = document.createElement('canvas');
+            document.getElementById('chart-container').innerHTML = '';
+            document.getElementById('chart-container').appendChild(ctx);
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(row => row[0]),
+                    datasets: [{
+                        label: 'Sample Data',
+                        data: data.map(row => row[1]),
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                }
+            });
+        }
+
+        // Function to populate the data table
+        function populateDataTable(data) {
+            const tableBody = document.getElementById('data-body');
+            tableBody.innerHTML = '';
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+                row.forEach(cell => {
+                    const td = document.createElement('td');
+                    td.textContent = cell;
+                    td.className = 'py-2 px-4 border-b';
+                    tr.appendChild(td);
+                });
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // Initialize the page
+        async function init() {
+            const data = await loadSheetData();
+            createChart(data);
+            populateDataTable(data);
+        }
+
+        // Call init when the page loads
+        window.onload = init;
+    </script>
 </body>
 </html>
